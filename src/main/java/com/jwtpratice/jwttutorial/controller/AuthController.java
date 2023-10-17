@@ -1,48 +1,28 @@
 package com.jwtpratice.jwttutorial.controller;
 
-import com.jwtpratice.jwttutorial.dto.LoginDto;
-import com.jwtpratice.jwttutorial.dto.TokenDto;
-import com.jwtpratice.jwttutorial.jwt.JwtFilter;
-import com.jwtpratice.jwttutorial.jwt.TokenProvider;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
+import com.jwtpratice.jwttutorial.dto.request.SignUpRequestDto;
+import com.jwtpratice.jwttutorial.dto.response.auth.SignUpResponseDto;
+import com.jwtpratice.jwttutorial.service.AuthService;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import jakarta.validation.Valid;
-
 @RestController
 @RequestMapping("/api")
+@RequiredArgsConstructor
 public class AuthController {
-    private final TokenProvider tokenProvider;
-    private final AuthenticationManagerBuilder authenticationManagerBuilder;
 
-    public AuthController(TokenProvider tokenProvider, AuthenticationManagerBuilder authenticationManagerBuilder) {
-        this.tokenProvider = tokenProvider;
-        this.authenticationManagerBuilder = authenticationManagerBuilder;
-    }
+    private final AuthService authService;
 
-    @PostMapping("/authenticate")
-    public ResponseEntity<TokenDto> authorize(@Valid @RequestBody LoginDto loginDto) {
-
-        UsernamePasswordAuthenticationToken authenticationToken =
-                new UsernamePasswordAuthenticationToken(loginDto.getUsername(), loginDto.getPassword());
-
-        Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-
-        String jwt = tokenProvider.createToken(authentication);
-
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add(JwtFilter.AUTHORIZATION_HEADER, "Bearer " + jwt);
-
-        return new ResponseEntity<>(new TokenDto(jwt), httpHeaders, HttpStatus.OK);
+    @PostMapping("/sign_up")
+    public ResponseEntity<? super SignUpResponseDto> signUp(
+            @RequestBody @Valid SignUpRequestDto requestBody
+    ){
+        ResponseEntity<? super SignUpResponseDto> response = authService.signUp(requestBody);
+        return response;
     }
 }
