@@ -16,16 +16,16 @@ public class JwtProvider {
     @Value("${secret-key}")
     private String secretKey;
 
-    public String create(String email) {
+    public String createToken(String email, String key, long expireTimeMs) {
+        Claims claims = Jwts.claims(); // 일종의 map
+        claims.put("email",  email);
 
-        Date expiredDate =Date.from(Instant.now().plus(1, ChronoUnit.HOURS));
-
-        String jwt = Jwts.builder()
-                .signWith(SignatureAlgorithm.ES256, secretKey)
-                .setSubject(email).setIssuedAt(new Date()).setExpiration(expiredDate)
+        return Jwts.builder()
+                .setClaims(claims)
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + expireTimeMs))
+                .signWith(SignatureAlgorithm.HS256, key)
                 .compact();
-
-        return jwt;
 
     }
 

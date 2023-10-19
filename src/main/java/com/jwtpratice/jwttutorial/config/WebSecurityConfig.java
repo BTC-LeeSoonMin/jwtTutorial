@@ -36,7 +36,7 @@ public class WebSecurityConfig {
                 .httpBasic().disable() // disable 안하면 security 로그인창 뜸
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .authorizeHttpRequests()
-                .requestMatchers("/","/api/**").permitAll()
+                .requestMatchers("/","/api/sign_up","/api/sign_in", "/home").permitAll()
 //                .requestMatchers(HttpMethod.GET, "/api/**").permitAll() // 모든 Get 요청은 인증하지 않겠다
                 .anyRequest().authenticated().and()
                 .exceptionHandling().authenticationEntryPoint(new FailedAuthenticationEntryPoint());
