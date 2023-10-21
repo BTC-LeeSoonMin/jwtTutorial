@@ -5,6 +5,7 @@ import com.jwtpratice.jwttutorial.service.AuthService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.HashMap;
 import java.util.Map;
 
+@Log4j2
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
@@ -50,10 +52,14 @@ public class AuthController {
                 return HttpStatus.BAD_REQUEST;
             }
 
+
+//            String refreshTokenValue = "Bearer " + map.get("refreshToken").toString();
             String refreshTokenValue = map.get("refreshToken").toString();
-            Cookie cookie = new Cookie("refreshToken", refreshTokenValue);
+            log.info("refreshTokenValue");
+            Cookie cookie = new Cookie("authorization", refreshTokenValue);
             cookie.setHttpOnly(true);  //httponly 옵션 설정
             cookie.setSecure(true); //https 옵션 설정
+            cookie.setMaxAge(24 * 3600);
             cookie.setPath("/"); // 모든 곳에서 쿠키열람이 가능하도록 설정
             response.addCookie(cookie);
 
