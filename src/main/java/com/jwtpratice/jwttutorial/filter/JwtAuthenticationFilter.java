@@ -73,26 +73,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         SecurityContextHolder.setContext(securityContext);
 
-
         filterChain.doFilter(request, response); // 다음 필터로
 
     }
 
 
 }
-
-//    private String parseBearerToken(HttpServletRequest request) {
-//        System.out.println("parseBearerToken");
-//        String authorization = request.getHeader("Authorization");
-//
-//        boolean hasAuthorization = StringUtils.hasText(authorization); // hasText => null, 길이가 0, 공백이라면 false 반환
-//        if (!hasAuthorization) return null;
-//        boolean isBearer = authorization.startsWith("Bearer "); // Bearer문자열 이후 한칸 띄운건지 확인
-//        if (!isBearer) return null;
-//
-//        String token = authorization.substring(7);
-//        log.info("token~ {}", token);
-//        return token;
-//
-//    }
-

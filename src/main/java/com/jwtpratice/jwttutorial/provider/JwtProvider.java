@@ -44,22 +44,22 @@ public class JwtProvider {
 
     }
 
-
-
-    public static boolean validate( String secretKey, String token) {
-
-        return Jwts.parser().setSigningKey(secretKey.getBytes()).parseClaimsJws(token)
-                .getBody().getExpiration().before(new Date());
+    // Claims에서 login email 꺼내기
+    public static String getUserEmail(String secretKey, String token ) {
+        System.out.println("getUserEmail in");
+        return extractClaims(secretKey, token).get("email").toString();
     }
-
-//    public static boolean validate(String secretKey,String token){
-//        return Jwts.parser().setSigningKey(secretKey.getBytes()).parseClaimsJws(token)
-//                .getBody().getExpiration().before(new Date());
-//    }
-
-    public static String getUserEmail(String secretKey,String token){
-        return Jwts.parser().setSigningKey(secretKey.getBytes()).parseClaimsJwt(token)
-                .getBody().get("userName", String.class);
+    // 밝급된 Token이 만료 시간이 지났는지 체크
+    public static boolean validate(String secretKey, String token) {
+        System.out.println("validate in");
+        Date expiredDate = extractClaims(secretKey,token).getExpiration();
+        // Token의 만료 날짜가 지금보다 이전인지 check
+        return expiredDate.before(new Date());
+    }
+    // SecretKey를 사용해 Token Parsing
+    private static Claims extractClaims(String secretKey, String token) {
+        System.out.println("extractClaims in");
+        return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
     }
 
 
