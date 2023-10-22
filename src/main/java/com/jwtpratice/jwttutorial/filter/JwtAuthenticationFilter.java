@@ -2,6 +2,7 @@ package com.jwtpratice.jwttutorial.filter;
 
 import com.jwtpratice.jwttutorial.provider.JwtProvider;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -39,21 +40,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         final String authorization = request.getHeader(HttpHeaders.AUTHORIZATION);
-        log.info(authorization);
 
-        // token안보내면 Block
-//        if (authorization == null) {
+        // Header의 Authorization 값이 비어있으면 => Jwt Token을 전송하지 않음 => 로그인 하지 않음
+        // Header의 Authorization 값이 'Bearer '로 시작하지 않으면 => 잘못된 토큰
         if (authorization == null || !authorization.startsWith("Bearer ")) {
-            log.error("authorization이 없습니다.");
+            log.error("authorization이 없습니다 또는 'Bearer '로 시작하지 않는 잘못된 토큰입니다.");
             filterChain.doFilter(request, response);
             return;
         }
         String token = authorization.substring(7);
-        System.out.println("token~ : " + token);
+
+        System.out.println("tp");
 
         // token 만료되었는지 확인
-
-
         if (JwtProvider.validate(secretKey, token)) {
             log.error("token이 만료되었습니다.");
             filterChain.doFilter(request, response);
@@ -62,7 +61,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         // getUserEmail
         String email = JwtProvider.getUserEmail(secretKey, token);
-        System.out.println("email~ : " + email);
 
         AbstractAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(email, null, AuthorityUtils.NO_AUTHORITIES);
@@ -73,26 +71,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         SecurityContextHolder.setContext(securityContext);
 
-
         filterChain.doFilter(request, response); // 다음 필터로
 
     }
 
 
 }
-
-//    private String parseBearerToken(HttpServletRequest request) {
-//        System.out.println("parseBearerToken");
-//        String authorization = request.getHeader("Authorization");
-//
-//        boolean hasAuthorization = StringUtils.hasText(authorization); // hasText => null, 길이가 0, 공백이라면 false 반환
-//        if (!hasAuthorization) return null;
-//        boolean isBearer = authorization.startsWith("Bearer "); // Bearer문자열 이후 한칸 띄운건지 확인
-//        if (!isBearer) return null;
-//
-//        String token = authorization.substring(7);
-//        log.info("token~ {}", token);
-//        return token;
-//
-//    }
-
