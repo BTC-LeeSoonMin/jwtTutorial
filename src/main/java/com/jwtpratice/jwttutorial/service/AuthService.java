@@ -1,6 +1,8 @@
 package com.jwtpratice.jwttutorial.service;
 
 import com.jwtpratice.jwttutorial.entity.UserEntity;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import java.util.Map;
 
@@ -11,4 +13,6 @@ public interface AuthService {
 
 
     Map<String,Object> signIn(Map<String, Object> msgMap, UserEntity userEntity);
+
+    Map<String, Object> refreshToken(HttpServletRequest request, HttpServletResponse response);
 }
