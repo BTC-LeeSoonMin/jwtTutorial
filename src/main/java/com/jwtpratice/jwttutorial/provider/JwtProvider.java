@@ -41,23 +41,6 @@ public class JwtProvider {
 
     }
 
-    // Claims에서 login email 꺼내기
-    public static String getUserEmail(String secretKey, String token ) {
-        log.info("getUserEmail in");
-        return extractClaims(secretKey, token).get("email").toString();
-    }
-    // 밝급된 Token이 만료 시간이 지났는지 체크
-    public static boolean validate(String secretKey, String token) {
-        log.info("validate in");
-        Date expiredDate = extractClaims(secretKey,token).getExpiration();
-        // Token의 만료 날짜가 지금보다 이전인지 check
-        return expiredDate.before(new Date());
-    }
-//     SecretKey를 사용해 Token Parsing
-    private static Claims extractClaims(String secretKey, String token) {
-        log.info("extractClaims in");
-        return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
-    }
 
 
 

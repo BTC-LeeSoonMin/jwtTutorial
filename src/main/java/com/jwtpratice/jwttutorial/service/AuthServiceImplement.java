@@ -2,10 +2,12 @@ package com.jwtpratice.jwttutorial.service;
 
 import com.jwtpratice.jwttutorial.dao.IMemberDaoMapper;
 import com.jwtpratice.jwttutorial.entity.UserEntity;
+import com.jwtpratice.jwttutorial.filter.JwtAuthenticationFilter;
 import com.jwtpratice.jwttutorial.provider.JwtProvider;
 import io.jsonwebtoken.Jwt;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,6 +23,7 @@ import java.util.Map;
 
 @Log4j2
 @Service
+@RequiredArgsConstructor
 public class AuthServiceImplement implements AuthService {
 
     @Value("${secret-key}")
@@ -29,9 +32,13 @@ public class AuthServiceImplement implements AuthService {
     @Autowired
     IMemberDaoMapper iMemberDaoMapper;
 
-    @Autowired
-    JwtProvider jwtProvider;
+//    @Autowired
+//    JwtProvider jwtProvider;
 
+    // @RequiredArgsConstructor을 이용하면 final로 지정된 것은 필수 생성자로 여긴다
+    private final JwtProvider jwtProvider;
+
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
@@ -94,10 +101,11 @@ public class AuthServiceImplement implements AuthService {
         }
         String cookieToken = authHeader.substring(7);
         refreshToken = cookieToken.split("=")[1];
-        userEmail = jwtProvider.getUserEmail(secretKey, refreshToken);
+        userEmail = jwtAuthenticationFilter.getUserEmail(secretKey, refreshToken);
         if (userEmail != null) {
-            if (jwtProvider.validate(secretKey, refreshToken)) {
+            if (jwtAuthenticationFilter.validate(secretKey, refreshToken)) {
                 log.error("refreshToken이 만료되었습니다.");
+//                jwtExceptionHandler(response, ErrorType.NOT_VALID_TOKEN);
             } else {
                 String ReAccessToken = jwtProvider.createAccessToken(userEmail, secretKey);
                 String ReRefreshToken = jwtProvider.createRefreshToken(userEmail, secretKey);

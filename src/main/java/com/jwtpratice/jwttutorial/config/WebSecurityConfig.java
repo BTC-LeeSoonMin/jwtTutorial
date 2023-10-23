@@ -1,25 +1,16 @@
 package com.jwtpratice.jwttutorial.config;
 
 //import com.jwtpratice.jwttutorial.common.CustomAuthenticationEntryPoint;
-import com.jwtpratice.jwttutorial.common.ExceptionHandlerFilter;
 import com.jwtpratice.jwttutorial.filter.JwtAuthenticationFilter;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import com.jwtpratice.jwttutorial.filter.JwtExceptionFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
-import java.io.IOException;
 
 @Configuration
 @EnableWebSecurity
@@ -27,7 +18,7 @@ import java.io.IOException;
 public class WebSecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
-    private final ExceptionHandlerFilter exceptionHandlerFilter;
+    private final JwtExceptionFilter jwtExceptionFilter;
 
 
     // throws Exception은 모든 Exception 처리를 호출부에서 하겠다라는 의미
@@ -41,6 +32,7 @@ public class WebSecurityConfig {
 //                .exceptionHandling()
 //                .authenticationEntryPoint(new CustomAuthenticationEntryPoint()).and()
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtExceptionFilter,JwtAuthenticationFilter.class)
                 .authorizeHttpRequests()
                 .requestMatchers("/","/api/sign_up","/api/sign_in", "/api/refresh_token").permitAll()
 //                .requestMatchers(HttpMethod.GET, "/api/**").permitAll() // 모든 Get 요청은 인증하지 않겠다
