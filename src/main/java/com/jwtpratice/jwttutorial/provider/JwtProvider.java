@@ -1,15 +1,10 @@
 package com.jwtpratice.jwttutorial.provider;
 
-import com.jwtpratice.jwttutorial.common.CustomException;
 import io.jsonwebtoken.*;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
-import java.nio.charset.StandardCharsets;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.Date;
 
 @Log4j2
@@ -63,19 +58,9 @@ public class JwtProvider {
         log.info("extractClaims in");
         return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
     }
-    // SecretKey를 사용해 Token Parsing
-//    private static Claims extractClaims(String secretKey, String token) {
-//        log.info("extractClaims in");
-//        try {
-//            return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
-//        } catch (ExpiredJwtException e) {
-//            log.info("Token expired");
-//            throw new CustomException("Token expired", HttpStatus.UNAUTHORIZED);
-//        } catch (JwtException e) {
-//            log.info("Invalid token");
-//            throw new CustomException("Invalid token", HttpStatus.UNAUTHORIZED);
-//        }
-//    }
+
+
+
 
 
 }

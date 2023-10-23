@@ -30,7 +30,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     // @RequiredArgsConstructor을 이용하면 final로 지정된 것은 필수 생성자로 여긴다
     private final JwtProvider jwtProvider;
-//    private final TokenService tokenService;
 
     @Value("${secret-key}")
     private String secretKey;
@@ -53,14 +52,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         System.out.println("tp");
 
         // token 만료되었는지 확인
-        if (JwtProvider.validate(secretKey, token)) {
+        if (jwtProvider.validate(secretKey, token)) {
             log.error("token이 만료되었습니다.");
             filterChain.doFilter(request, response);
             return;
         }
 
         // getUserEmail
-        String email = JwtProvider.getUserEmail(secretKey, token);
+        String email = jwtProvider.getUserEmail(secretKey, token);
 
         AbstractAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(email, null, AuthorityUtils.NO_AUTHORITIES);

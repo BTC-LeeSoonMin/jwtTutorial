@@ -1,5 +1,7 @@
 package com.jwtpratice.jwttutorial.config;
 
+//import com.jwtpratice.jwttutorial.common.CustomAuthenticationEntryPoint;
+import com.jwtpratice.jwttutorial.common.ExceptionHandlerFilter;
 import com.jwtpratice.jwttutorial.filter.JwtAuthenticationFilter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,6 +27,7 @@ import java.io.IOException;
 public class WebSecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final ExceptionHandlerFilter exceptionHandlerFilter;
 
 
     // throws Exception은 모든 Exception 처리를 호출부에서 하겠다라는 의미
@@ -35,6 +38,8 @@ public class WebSecurityConfig {
                 .csrf().disable() // 공격자가 사용자의 의지 없이(모르게) 공격하게 만드는 보안 공격
                 .httpBasic().disable() // disable 안하면 security 로그인창 뜸
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
+//                .exceptionHandling()
+//                .authenticationEntryPoint(new CustomAuthenticationEntryPoint()).and()
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests()
                 .requestMatchers("/","/api/sign_up","/api/sign_in", "/api/refresh_token").permitAll()
@@ -42,8 +47,6 @@ public class WebSecurityConfig {
                 .anyRequest().authenticated()
                 .and().build();
 
-
-//        return httpSecurity.build();
     }
 
 
