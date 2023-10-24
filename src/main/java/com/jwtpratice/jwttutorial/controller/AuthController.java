@@ -1,5 +1,6 @@
 package com.jwtpratice.jwttutorial.controller;
 
+import com.jwtpratice.jwttutorial.entity.RefTokenEntity;
 import com.jwtpratice.jwttutorial.entity.UserEntity;
 import com.jwtpratice.jwttutorial.service.AuthService;
 import jakarta.servlet.http.Cookie;
@@ -38,13 +39,13 @@ public class AuthController {
     }
 
     @PostMapping("/sign_in")
-    public Object signIn(@RequestBody Map<String, Object> msgMap, UserEntity userEntity, HttpServletResponse response) {
+    public Object signIn(@RequestBody Map<String, Object> msgMap, UserEntity userEntity, RefTokenEntity refTokenEntity, HttpServletResponse response) {
         System.out.println("[AuthController] signIn");
 
         userEntity.setEmail(msgMap.get("email").toString());
         userEntity.setM_password(msgMap.get("m_password").toString());
 
-        Map<String, Object> map = authService.signIn(msgMap, userEntity);
+        Map<String, Object> map = authService.signIn(msgMap, userEntity, refTokenEntity);
 
         if (map != null) {
             if (map.get("result") == HttpStatus.NOT_FOUND) {
@@ -72,8 +73,12 @@ public class AuthController {
     @PostMapping("/refresh_token")
     public Object refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
         log.info("refreshToken in");
+
+        // token에 동일한 refresh token 명이 있는지 check
+        // 있으면 이후 작업 진행,
+        // 없으면 이미 로그아웃 또는 회원 탈퇴를 진행한 회원이라고 판단했기 때문에 오류 코드 발생.
+
         Map<String, Object> map = authService.refreshToken(request, response);
-        System.out.println("map"+ map);
 
         String refreshTokenValue = (String) map.get("ReRefreshToken");
         log.info("ReRefreshToken");

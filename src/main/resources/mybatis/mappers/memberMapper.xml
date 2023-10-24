@@ -23,6 +23,16 @@
             email = #{email}
     </select>
 
+    <insert id="insertRefToken" parameterType="com.jwtpratice.jwttutorial.entity.RefTokenEntity">
+        INSERT INTO
+            tokens(ref_token, t_reg_date)
+        VALUES
+            (
+                #{ref_token},
+                NOW()
+            )
+    </insert>
+
 
 
 

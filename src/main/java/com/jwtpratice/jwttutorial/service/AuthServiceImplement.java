@@ -1,6 +1,7 @@
 package com.jwtpratice.jwttutorial.service;
 
 import com.jwtpratice.jwttutorial.dao.IMemberDaoMapper;
+import com.jwtpratice.jwttutorial.entity.RefTokenEntity;
 import com.jwtpratice.jwttutorial.entity.UserEntity;
 import com.jwtpratice.jwttutorial.filter.JwtAuthenticationFilter;
 import com.jwtpratice.jwttutorial.provider.JwtProvider;
@@ -32,9 +33,6 @@ public class AuthServiceImplement implements AuthService {
     @Autowired
     IMemberDaoMapper iMemberDaoMapper;
 
-//    @Autowired
-//    JwtProvider jwtProvider;
-
     // @RequiredArgsConstructor을 이용하면 final로 지정된 것은 필수 생성자로 여긴다
     private final JwtProvider jwtProvider;
 
@@ -65,7 +63,7 @@ public class AuthServiceImplement implements AuthService {
     }
 
     @Override
-    public Map<String, Object> signIn(Map<String, Object> msgMap, UserEntity userEntity) {
+    public Map<String, Object> signIn(Map<String, Object> msgMap, UserEntity userEntity, RefTokenEntity refTokenEntity) {
         System.out.println("[AuthServiceImplement] signIn");
 
         Map<String, Object> map = new HashMap<>();
@@ -76,6 +74,18 @@ public class AuthServiceImplement implements AuthService {
         if (idVerifiedUserEntity != null && passwordEncoder.matches(userEntity.getM_password(), idVerifiedUserEntity.getM_password())) {
             String accessToken = jwtProvider.createAccessToken(userEntity.getEmail(), secretKey);
             String refreshToken = jwtProvider.createRefreshToken(userEntity.getEmail(), secretKey);
+
+            refTokenEntity.setRef_token(refreshToken);
+            log.info("tp : "+ refTokenEntity.getRef_token());
+            // refresh token -> tbl_tokens에 저장
+            int result = iMemberDaoMapper.insertRefToken(refTokenEntity);
+            if(result <= 0){
+                 log.info("Ref Token 등록 실패");
+            } else {
+                 log.info("Ref Token 등록 성공");
+
+            }
+
             map.put("accessToken", accessToken);
             map.put("refreshToken", refreshToken);
             return map;
