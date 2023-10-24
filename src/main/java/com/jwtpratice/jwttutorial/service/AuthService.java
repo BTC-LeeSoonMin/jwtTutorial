@@ -14,5 +14,6 @@ public interface AuthService {
 
     Map<String,Object> signIn(Map<String, Object> msgMap, UserEntity userEntity, RefTokenEntity refTokenEntity);
 
-    Map<String, Object> refreshToken(HttpServletRequest request, HttpServletResponse response);
+    Map<String, Object> refreshToken(HttpServletRequest request, HttpServletResponse response, RefTokenEntity refTokenEntity);
+
 }

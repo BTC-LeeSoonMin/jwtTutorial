@@ -15,4 +15,6 @@ public interface IMemberDaoMapper {
     String checkPw(UserEntity userEntity);
 
     int insertRefToken(RefTokenEntity refTokenEntity);
+
+    RefTokenEntity selectRefToken(RefTokenEntity refTokenEntity);
 }

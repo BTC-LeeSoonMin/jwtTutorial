@@ -71,14 +71,14 @@ public class AuthController {
     }
 
     @PostMapping("/refresh_token")
-    public Object refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public Object refreshToken(HttpServletRequest request, HttpServletResponse response, RefTokenEntity refTokenEntity) throws IOException {
         log.info("refreshToken in");
 
-        // token에 동일한 refresh token 명이 있는지 check
-        // 있으면 이후 작업 진행,
-        // 없으면 이미 로그아웃 또는 회원 탈퇴를 진행한 회원이라고 판단했기 때문에 오류 코드 발생.
-
-        Map<String, Object> map = authService.refreshToken(request, response);
+        Map<String, Object> map = authService.refreshToken(request, response, refTokenEntity);
+        if(map.get("result") == "nullCheckRefToken"){
+            log.info("tp");
+            return "이미 탈퇴한 회원 또는 로그아웃이 된 대상이므로 로그인 다시 해주세요.";
+        }
 
         String refreshTokenValue = (String) map.get("ReRefreshToken");
         log.info("ReRefreshToken");

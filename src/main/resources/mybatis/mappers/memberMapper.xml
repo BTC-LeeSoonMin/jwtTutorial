@@ -33,6 +33,14 @@
             )
     </insert>
 
+    <select id="selectRefToken" parameterType="com.jwtpratice.jwttutorial.entity.RefTokenEntity" resultType="com.jwtpratice.jwttutorial.entity.RefTokenEntity">
+        SELECT
+            *
+        FROM
+            tokens
+        WHERE
+            ref_token = #{ref_token}
+    </select>
 
 
 

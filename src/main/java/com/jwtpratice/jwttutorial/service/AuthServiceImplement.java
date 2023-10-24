@@ -99,8 +99,9 @@ public class AuthServiceImplement implements AuthService {
     }
 
     @Override
-    public Map<String, Object> refreshToken(HttpServletRequest request, HttpServletResponse response) {
+    public Map<String, Object> refreshToken(HttpServletRequest request, HttpServletResponse response, RefTokenEntity refTokenEntity) {
         System.out.println("[AuthServiceImplement] refreshToken");
+
         Map<String, Object> map = new HashMap<>();
         final String authHeader = request.getHeader(HttpHeaders.COOKIE);
         final String refreshToken;
@@ -111,6 +112,18 @@ public class AuthServiceImplement implements AuthService {
         }
         String cookieToken = authHeader.substring(7);
         refreshToken = cookieToken.split("=")[1];
+
+        // token에 동일한 refresh token 명이 있는지 check
+        // 있으면 이후 작업 진행,
+        // 없으면 이미 로그아웃 또는 회원 탈퇴를 진행한 회원이라고 판단했기 때문에 오류 코드 발생.
+        refTokenEntity.setRef_token(refreshToken);
+        RefTokenEntity checkRefToken = iMemberDaoMapper.selectRefToken(refTokenEntity);
+        log.info("tp : {}", checkRefToken);
+        if(checkRefToken == null) {
+            map.put("result", "nullCheckRefToken");
+            return map;
+        }
+
         userEmail = jwtAuthenticationFilter.getUserEmail(secretKey, refreshToken);
         if (userEmail != null) {
             if (jwtAuthenticationFilter.validate(secretKey, refreshToken)) {
@@ -124,7 +137,7 @@ public class AuthServiceImplement implements AuthService {
                 return map;
             }
         }
-        map.put("result", HttpStatus.NOT_FOUND);
         return map;
     }
+
 }
