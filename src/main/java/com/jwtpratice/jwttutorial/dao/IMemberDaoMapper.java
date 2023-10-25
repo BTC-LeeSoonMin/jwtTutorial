@@ -17,4 +17,6 @@ public interface IMemberDaoMapper {
     RefTokenEntity selectRefToken(RefTokenEntity refTokenEntity);
 
     int deleteDupRefToken(RefTokenEntity checkedRefToken);
+
+    int deleteMember(String userEmail);
 }

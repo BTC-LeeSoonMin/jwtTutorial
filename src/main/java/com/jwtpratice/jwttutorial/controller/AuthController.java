@@ -109,10 +109,10 @@ public class AuthController {
     }
 
     @PostMapping("/sign_out")
-    public Object signOut(HttpServletRequest request, HttpServletResponse response, RefTokenEntity refTokenEntity) {
+    public Object signOut(HttpServletRequest request, HttpServletResponse response,UserEntity userEntity, RefTokenEntity refTokenEntity) {
         log.info("signOut");
 
-        String result = authService.signOut(request, response, refTokenEntity);
+        String result = authService.signOut(request, response,userEntity, refTokenEntity);
         if(result == "중복 refToken 삭제 실패"){
             log.info("중복 refToken 삭제 실패");
             return "signOut fail";

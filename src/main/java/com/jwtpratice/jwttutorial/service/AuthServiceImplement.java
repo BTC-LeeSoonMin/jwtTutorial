@@ -228,10 +228,46 @@ public class AuthServiceImplement implements AuthService {
     }
 
     @Override
-    public String signOut(HttpServletRequest request, HttpServletResponse response, RefTokenEntity refTokenEntity) {
+    public String signOut(HttpServletRequest request, HttpServletResponse response,UserEntity userEntity, RefTokenEntity refTokenEntity) {
+        log.info("signOut");
+
+        final String authHeader = request.getHeader(HttpHeaders.COOKIE);
+        final String refreshToken;
+        final String userEmail;
+        if (authHeader == null) {
+           log.info("authHeaderNull");
+           return "refresh token is null";
+        }
+        String cookieToken = authHeader.substring(7);
+        refreshToken = cookieToken.split("=")[1];
 
 
-        return null;
+        // ref token에서 userEmail 추출
+        userEmail = jwtAuthenticationFilter.getUserEmail(secretKey, refreshToken);
+
+        // userEmail 이 동일한 사람 DB에서 삭제
+        log.info("userEmail = {}", userEmail);
+        userEntity.setEmail(userEmail);
+        int deleteMemberResult = iMemberDaoMapper.deleteMember(userEmail);
+        if(deleteMemberResult <= 0){
+            log.info("delete Member fail");
+            return "회원탈퇴 실패";
+        }
+
+        refTokenEntity.setRef_token(refreshToken);
+        log.info("refreshToken = {}", refreshToken);
+        RefTokenEntity checkedRefToken = iMemberDaoMapper.selectRefToken(refTokenEntity);
+        if (checkedRefToken != null) {
+            int result = iMemberDaoMapper.deleteDupRefToken(checkedRefToken);
+            if (result > 0) {
+                log.info("중복 refToken 삭제 완료");
+            } else {
+                log.info("중복 refToken 삭제 실패");
+                return "중복 refToken 삭제 실패";
+            }
+        }
+
+        return "회원 탈퇴 성공";
     }
 
 }
