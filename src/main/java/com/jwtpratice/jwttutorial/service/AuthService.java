@@ -18,5 +18,5 @@ public interface AuthService {
 
     String logout(HttpServletRequest request, HttpServletResponse response, RefTokenEntity refTokenEntity);
 
-    String signOut(HttpServletRequest request, HttpServletResponse response, RefTokenEntity refTokenEntity);
+    String signOut(HttpServletRequest request, HttpServletResponse response, UserEntity userEntity, RefTokenEntity refTokenEntity);
 }

@@ -50,6 +50,14 @@
 
     </delete>
 
+    <delete id="deleteMember" parameterType="com.jwtpratice.jwttutorial.entity.UserEntity">
+        DELETE FROM
+            user
+        WHERE
+            email = #{email}
+
+    </delete>
+
 
 
 </mapper>

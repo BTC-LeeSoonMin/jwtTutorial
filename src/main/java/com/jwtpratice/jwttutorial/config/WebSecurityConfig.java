@@ -33,7 +33,7 @@ public class WebSecurityConfig {
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtExceptionFilter,JwtAuthenticationFilter.class)
                 .authorizeHttpRequests()
-                .requestMatchers("/","/api/sign_up","/api/sign_in", "/api/refresh_token", "/api/logout").permitAll()
+                .requestMatchers("/","/api/sign_up","/api/sign_in", "/api/refresh_token", "/api/logout","/api/sign_out").permitAll()
 //                .requestMatchers(HttpMethod.GET, "/api/**").permitAll() // 모든 Get 요청은 인증하지 않겠다
                 .anyRequest().authenticated()
                 .and().build();
