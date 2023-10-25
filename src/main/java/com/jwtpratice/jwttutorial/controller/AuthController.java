@@ -39,13 +39,13 @@ public class AuthController {
     }
 
     @PostMapping("/sign_in")
-    public Object signIn(@RequestBody Map<String, Object> msgMap, UserEntity userEntity, RefTokenEntity refTokenEntity, HttpServletResponse response) {
+    public Object signIn(@RequestBody Map<String, Object> msgMap, UserEntity userEntity, RefTokenEntity refTokenEntity,HttpServletRequest request, HttpServletResponse response) {
         System.out.println("[AuthController] signIn");
 
         userEntity.setEmail(msgMap.get("email").toString());
         userEntity.setM_password(msgMap.get("m_password").toString());
 
-        Map<String, Object> map = authService.signIn(msgMap, userEntity, refTokenEntity);
+        Map<String, Object> map = authService.signIn(msgMap, userEntity, refTokenEntity, request,response);
 
         if (map != null) {
             if (map.get("result") == HttpStatus.NOT_FOUND) {
@@ -76,7 +76,7 @@ public class AuthController {
 
         Map<String, Object> map = authService.refreshToken(request, response, refTokenEntity);
         if(map.get("result") == "nullCheckRefToken"){
-            log.info("tp");
+
             return "이미 탈퇴한 회원 또는 로그아웃이 된 대상이므로 로그인 다시 해주세요.";
         }
 

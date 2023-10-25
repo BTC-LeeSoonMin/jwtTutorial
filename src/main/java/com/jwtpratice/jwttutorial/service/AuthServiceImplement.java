@@ -63,15 +63,47 @@ public class AuthServiceImplement implements AuthService {
     }
 
     @Override
-    public Map<String, Object> signIn(Map<String, Object> msgMap, UserEntity userEntity, RefTokenEntity refTokenEntity) {
+    public Map<String, Object> signIn(
+            Map<String, Object> msgMap,
+            UserEntity userEntity,
+            RefTokenEntity refTokenEntity,
+            HttpServletRequest request,
+            HttpServletResponse response) {
         System.out.println("[AuthServiceImplement] signIn");
 
         Map<String, Object> map = new HashMap<>();
 
         // 동일한 username 없음
         UserEntity idVerifiedUserEntity = iMemberDaoMapper.isMember(userEntity);
-
+        log.info("tp1");
         if (idVerifiedUserEntity != null && passwordEncoder.matches(userEntity.getM_password(), idVerifiedUserEntity.getM_password())) {
+            log.info("tp2");
+            /*
+                로그인 시
+                동일한 refresh token 명의 행이 있다면 delete 후
+                새로 발급받은 refresh token을 insert해준다.
+             */
+            final String authHeader = request.getHeader(HttpHeaders.COOKIE);
+            final String checkingRefToken;
+            if (authHeader != null) {
+                log.info("tp3");
+                String cookieToken = authHeader.substring(7);
+                checkingRefToken = cookieToken.split("=")[1];
+                refTokenEntity.setRef_token(checkingRefToken);
+                log.info("checkingRefToken = {}", checkingRefToken);
+                RefTokenEntity checkedRefToken = iMemberDaoMapper.selectRefToken(refTokenEntity);
+                if(checkedRefToken != null){
+                    int result = iMemberDaoMapper.deleteDupRefToken(checkedRefToken);
+                    if(result > 0){
+                        log.info("중복 refToken 삭제 완료");
+                    } else {
+                        log.info("중복 refToken 삭제 실패");
+                    }
+                }
+//                map.put("result", HttpStatus.NOT_FOUND);
+//                return map;
+            }
+            log.info("tp4");
             String accessToken = jwtProvider.createAccessToken(userEntity.getEmail(), secretKey);
             String refreshToken = jwtProvider.createRefreshToken(userEntity.getEmail(), secretKey);
 

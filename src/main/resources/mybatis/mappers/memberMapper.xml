@@ -42,6 +42,14 @@
             ref_token = #{ref_token}
     </select>
 
+    <delete id="deleteDupRefToken" parameterType="com.jwtpratice.jwttutorial.entity.RefTokenEntity">
+        DELETE FROM
+                tokens
+        WHERE
+            ref_token = #{ref_token}
+
+    </delete>
+
 
 
 </mapper>
