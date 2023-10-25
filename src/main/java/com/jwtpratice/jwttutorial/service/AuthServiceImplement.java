@@ -199,4 +199,39 @@ public class AuthServiceImplement implements AuthService {
         return map;
     }
 
+    @Override
+    public String logout(HttpServletRequest request, HttpServletResponse response, RefTokenEntity refTokenEntity) {
+        log.info("logout");
+
+        final String authHeader = request.getHeader(HttpHeaders.COOKIE);
+        final String checkingRefToken;
+        if (authHeader != null) {
+            log.info("tp3");
+            String cookieToken = authHeader.substring(7);
+            checkingRefToken = cookieToken.split("=")[1];
+            refTokenEntity.setRef_token(checkingRefToken);
+            log.info("checkingRefToken = {}", checkingRefToken);
+            RefTokenEntity checkedRefToken = iMemberDaoMapper.selectRefToken(refTokenEntity);
+            if (checkedRefToken != null) {
+                int result = iMemberDaoMapper.deleteDupRefToken(checkedRefToken);
+                if (result > 0) {
+                    log.info("중복 refToken 삭제 완료");
+                    return "중복 refToken 삭제 완료";
+                } else {
+                    log.info("중복 refToken 삭제 실패");
+                    return "중복 refToken 삭제 실패";
+                }
+            }
+
+        }
+        return "token 값이 잘못되었습니다.";
+    }
+
+    @Override
+    public String signOut(HttpServletRequest request, HttpServletResponse response, RefTokenEntity refTokenEntity) {
+
+
+        return null;
+    }
+
 }
