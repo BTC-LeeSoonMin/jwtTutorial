@@ -26,8 +26,6 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class AuthController {
 
-    private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-
     private final AuthService authService;
 
     @PostMapping("/sign_up")
@@ -91,5 +89,39 @@ public class AuthController {
 
         return map.get("ReAccessToken");
 
+    }
+
+    @PostMapping("/logout")
+    public Object logout(HttpServletRequest request, HttpServletResponse response, RefTokenEntity refTokenEntity) {
+        log.info("logout");
+
+        String result = authService.logout(request, response, refTokenEntity);
+        if(result == "중복 refToken 삭제 실패"){
+            log.info("중복 refToken 삭제 실패");
+            return "logout fail";
+        }
+        if(result == "token 값이 잘못되었습니다."){
+            log.info("token 값이 잘못되었습니다.");
+            return "token 값이 잘못되었습니다.";
+        }
+
+        return "logout success";
+    }
+
+    @PostMapping("/sign_out")
+    public Object signOut(HttpServletRequest request, HttpServletResponse response, RefTokenEntity refTokenEntity) {
+        log.info("signOut");
+
+        String result = authService.signOut(request, response, refTokenEntity);
+        if(result == "중복 refToken 삭제 실패"){
+            log.info("중복 refToken 삭제 실패");
+            return "signOut fail";
+        }
+        if(result == "token 값이 잘못되었습니다."){
+            log.info("token 값이 잘못되었습니다.");
+            return "token 값이 잘못되었습니다.";
+        }
+
+        return "signOut success";
     }
 }
