@@ -146,7 +146,7 @@ public class AuthServiceImplement implements AuthService {
         refreshToken = cookieToken.split("=")[1];
 
         // token에 동일한 refresh token 명이 있는지 check
-        // 있으면 이후 작업 진행,
+        // 있으면 이후 작업 진행, -> DB 중복 ref token delete -> 새로 발급받은 ref token insert
         // 없으면 이미 로그아웃 또는 회원 탈퇴를 진행한 회원이라고 판단했기 때문에 오류 코드 발생.
         refTokenEntity.setRef_token(refreshToken);
         RefTokenEntity checkRefToken = iMemberDaoMapper.selectRefToken(refTokenEntity);
@@ -156,14 +156,41 @@ public class AuthServiceImplement implements AuthService {
             return map;
         }
 
+        // 중복 ref token delete
+        refTokenEntity.setRef_token(checkRefToken.getRef_token());
+        log.info("checkRefToken = {}", checkRefToken);
+        if(checkRefToken != null){
+            int result = iMemberDaoMapper.deleteDupRefToken(checkRefToken);
+            if(result > 0){
+                log.info("중복 refToken 삭제 완료");
+            } else {
+                log.info("중복 refToken 삭제 실패");
+            }
+        }
+
         userEmail = jwtAuthenticationFilter.getUserEmail(secretKey, refreshToken);
         if (userEmail != null) {
             if (jwtAuthenticationFilter.validate(secretKey, refreshToken)) {
                 log.error("refreshToken이 만료되었습니다.");
 //                jwtExceptionHandler(response, ErrorType.NOT_VALID_TOKEN);
             } else {
+
+
+                // 재발급 받은 Ref Token insert
                 String ReAccessToken = jwtProvider.createAccessToken(userEmail, secretKey);
                 String ReRefreshToken = jwtProvider.createRefreshToken(userEmail, secretKey);
+
+                refTokenEntity.setRef_token(ReRefreshToken);
+                log.info("tp : "+ refTokenEntity.getRef_token());
+                // refresh token -> tbl_tokens에 저장
+                int result = iMemberDaoMapper.insertRefToken(refTokenEntity);
+                if(result <= 0){
+                    log.info("Ref Token 등록 실패");
+                } else {
+                    log.info("Ref Token 등록 성공");
+
+                }
+
                 map.put("ReAccessToken", ReAccessToken);
                 map.put("ReRefreshToken", ReRefreshToken);
                 return map;
