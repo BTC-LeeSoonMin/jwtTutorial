@@ -1,5 +1,6 @@
 package com.jwtpratice.jwttutorial.controller;
 
+import com.jwtpratice.jwttutorial.entity.RefTokenEntity;
 import com.jwtpratice.jwttutorial.entity.UserEntity;
 import com.jwtpratice.jwttutorial.service.AuthService;
 import jakarta.servlet.http.Cookie;
@@ -38,13 +39,13 @@ public class AuthController {
     }
 
     @PostMapping("/sign_in")
-    public Object signIn(@RequestBody Map<String, Object> msgMap, UserEntity userEntity, HttpServletResponse response) {
+    public Object signIn(@RequestBody Map<String, Object> msgMap, UserEntity userEntity, RefTokenEntity refTokenEntity,HttpServletRequest request, HttpServletResponse response) {
         System.out.println("[AuthController] signIn");
 
         userEntity.setEmail(msgMap.get("email").toString());
         userEntity.setM_password(msgMap.get("m_password").toString());
 
-        Map<String, Object> map = authService.signIn(msgMap, userEntity);
+        Map<String, Object> map = authService.signIn(msgMap, userEntity, refTokenEntity, request,response);
 
         if (map != null) {
             if (map.get("result") == HttpStatus.NOT_FOUND) {
@@ -70,10 +71,14 @@ public class AuthController {
     }
 
     @PostMapping("/refresh_token")
-    public Object refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public Object refreshToken(HttpServletRequest request, HttpServletResponse response, RefTokenEntity refTokenEntity) throws IOException {
         log.info("refreshToken in");
-        Map<String, Object> map = authService.refreshToken(request, response);
-        System.out.println("map"+ map);
+
+        Map<String, Object> map = authService.refreshToken(request, response, refTokenEntity);
+        if(map.get("result") == "nullCheckRefToken"){
+
+            return "이미 탈퇴한 회원 또는 로그아웃이 된 대상이므로 로그인 다시 해주세요.";
+        }
 
         String refreshTokenValue = (String) map.get("ReRefreshToken");
         log.info("ReRefreshToken");

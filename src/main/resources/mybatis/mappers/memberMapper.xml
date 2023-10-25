@@ -23,6 +23,32 @@
             email = #{email}
     </select>
 
+    <insert id="insertRefToken" parameterType="com.jwtpratice.jwttutorial.entity.RefTokenEntity">
+        INSERT INTO
+            tokens(ref_token, t_reg_date)
+        VALUES
+            (
+                #{ref_token},
+                NOW()
+            )
+    </insert>
+
+    <select id="selectRefToken" parameterType="com.jwtpratice.jwttutorial.entity.RefTokenEntity" resultType="com.jwtpratice.jwttutorial.entity.RefTokenEntity">
+        SELECT
+            *
+        FROM
+            tokens
+        WHERE
+            ref_token = #{ref_token}
+    </select>
+
+    <delete id="deleteDupRefToken" parameterType="com.jwtpratice.jwttutorial.entity.RefTokenEntity">
+        DELETE FROM
+                tokens
+        WHERE
+            ref_token = #{ref_token}
+
+    </delete>
 
 
 

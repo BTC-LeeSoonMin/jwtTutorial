@@ -43,6 +43,9 @@ dependencies {
 //	providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
+	// JSONObejct
+	implementation group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1.1'
+
 	//jwt
 //	implementation group: 'io.jsonwebtoken', name: 'jjwt', version: '0.9.1'
 	implementation 'io.jsonwebtoken:jjwt:0.9.1'

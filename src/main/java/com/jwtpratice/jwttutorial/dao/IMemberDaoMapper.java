@@ -1,5 +1,6 @@
 package com.jwtpratice.jwttutorial.dao;
 
+import com.jwtpratice.jwttutorial.entity.RefTokenEntity;
 import com.jwtpratice.jwttutorial.entity.UserEntity;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -11,5 +12,9 @@ public interface IMemberDaoMapper {
 
     UserEntity isMember(UserEntity userEntity);
 
-    String checkPw(UserEntity userEntity);
+    int insertRefToken(RefTokenEntity refTokenEntity);
+
+    RefTokenEntity selectRefToken(RefTokenEntity refTokenEntity);
+
+    int deleteDupRefToken(RefTokenEntity checkedRefToken);
 }
